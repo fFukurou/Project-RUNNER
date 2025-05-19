@@ -1,0 +1,4 @@
+repository "Project Runner_1@IFukurou@cloud"
+  path "/"
+    br "/main"
+    co "/main"
