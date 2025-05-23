@@ -9,6 +9,11 @@ public class Player : MonoBehaviour
     [Header("Move Info")]
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float doubleJumpForce;
+    private float defaultJumpForce;
+
+    private bool canDoubleJump;
+
 
     private bool playerUnlocked;
 
@@ -23,6 +28,8 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+
+        defaultJumpForce = jumpForce;
     }
 
     // Update is called once per frame
@@ -40,6 +47,7 @@ public class Player : MonoBehaviour
 
     private void AnimatorControllers()
     {
+        anim.SetBool("canDoubleJump", canDoubleJump);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetFloat("xVelocity", rb.velocity.x);
         anim.SetFloat("yVelocity", rb.velocity.y);
@@ -58,8 +66,25 @@ public class Player : MonoBehaviour
             playerUnlocked = true;
 
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump"))
+            JumpButton();
+    }
+
+    private void JumpButton()
+    {
+        if (isGrounded)
+        {
+            canDoubleJump = true;
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
+        else if (canDoubleJump)
+        {
+            jumpForce = doubleJumpForce;
+            canDoubleJump = false;
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            // changse jumpForce back to default after we do the double jump;
+            jumpForce = defaultJumpForce;
+        }
     }
 
     void OnDrawGizmos()
